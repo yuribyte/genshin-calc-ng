@@ -1,0 +1,18 @@
+.parent {
+  position: relative;
+}
+.child {
+  position: absolute;
+  margin-top: 32vh;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 750px) {
+  .child {
+    position: absolute;
+    margin-top: 28vh;
+    display: flex;
+    justify-content: center;
+  }
+}

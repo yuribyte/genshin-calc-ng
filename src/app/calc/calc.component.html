@@ -1,0 +1,34 @@
+<div *ngIf="result" [@fadeInOut] class="alert alert-warning" role="alert">
+  <strong>Minutos:</strong> {{calculatedResinMinutes}} <br>
+  <strong>Horas:</strong> {{calculatedResinHours}} <br>
+  <strong>Data:</strong> {{calculatedResinData}} <br>
+</div>
+
+
+<div class="text-success-form" [@fadeInOut] class="alert alert-success" *ngIf="result == false && currentLocalData != undefined">
+  <strong>Último resultado</strong>
+  <hr>
+  <strong>Minutos:</strong> {{currentLocalMinutes}} <br>
+  <strong>Horas:</strong> {{currentLocalHours}} <br>
+  <strong>Data:</strong> {{currentLocalData}} <br>
+</div>
+
+<div class="text-danger-form" [@fadeInOut] class="alert alert-danger" *ngIf="form.hasError('isGreater')">
+  Valores incorretos
+</div>
+<div class="text-success-form" [@fadeInOut] class="alert alert-success" *ngIf="form.hasError('isSame')">
+  Resina carregada! ^ω^
+</div>
+
+
+<form [formGroup]="form" novalidade>
+  <div class="form-group">
+    <label for="currentResin">{{currentResinText}}</label>
+    <input [imask]="mask" inputmode="numeric" pattern="[0-9]*" autocomplete="off" formControlName="currentResin" type="text" class="form-control" id="currentResin" aria-describedby="currentResin" placeholder="0">
+  </div>
+  <div class="form-group">
+    <label for="expectedResin">{{expectedResinText}}</label>
+    <input [imask]="mask" inputmode="numeric" pattern="[0-9]*" autocomplete="off" formControlName="expectedResin" type="text" class="form-control" id="expectedResin" aria-describedby="expectedResin" placeholder="0">
+  </div>
+  <button [disabled]="form.invalid || form.hasError('isGreater')" (click)="calcResin()" class="btn btn-primary btn-lg btn-block"><b>{{btnText}}</b></button>
+</form>

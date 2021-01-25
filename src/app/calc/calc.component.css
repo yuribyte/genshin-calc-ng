@@ -1,0 +1,13 @@
+label {
+  color: #dddddd;
+}
+
+input {
+  height: 2em;
+  font-size: 1.5em;
+  width: 360px;
+}
+
+label {
+  font-size: 1.2em;
+}
