@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 
 import * as dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
+import toastr from 'toastr'
 
 @Component({
   selector: 'genshin-calc',
@@ -52,6 +53,10 @@ export class CalcComponent implements OnInit {
   currentLocalHours;
   currentLocalData;
 
+  unixMinutes;
+
+  isInvalid = false;
+  isSame = false;
 
   calculatedValues;
 
@@ -64,18 +69,26 @@ export class CalcComponent implements OnInit {
     mask: Number
   }
 
-
-  constructor(
-    private fb: FormBuilder
-  ) { }
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      currentResin: [null, [Validators.required]],
-      expectedResin: [null, [Validators.required]]
-    },
-      { validator: CalcComponent.isGreater }
-    );
+    this.getLocals()
+    this.buildForm()
+  }
+
+  checkValues() {
+    const current = parseInt(this.form.value.currentResin)
+    const expected = parseInt(this.form.value.expectedResin)
+
+    if (current < 0 || expected < 0) {
+      this.setInvalid()
+    } else if (current > expected) {
+      this.setInvalid()
+    } else if (current == expected) {
+      this.setSame()
+    } else {
+      this.calcResin()
+    }
 
     this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes')
     this.currentLocalHours = localStorage.getItem('currentLocalHours')
@@ -109,10 +122,38 @@ export class CalcComponent implements OnInit {
       localStorage.setItem('currentLocalHours', this.calculatedResinHours)
       localStorage.setItem('currentLocalData', this.calculatedResinData)
     }
-
-
+    
     this.result = true
 
+  }
+
+  setInvalid() {
+    toastr.error('Valores incorretos!', 'Erro!')
+    this.isInvalid = true
+    setTimeout(() => {
+      this.isInvalid = false
+    }, 750);
+  }
+
+  setSame() {
+    toastr.info('Resina carregada!', 'Atenção')
+    this.isSame = true
+    setTimeout(() => {
+      this.isSame = false
+    }, 750);
+  }
+
+  getLocals() {
+    this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes')
+    this.currentLocalHours = localStorage.getItem('currentLocalHours')
+    this.currentLocalData = localStorage.getItem('currentLocalData')
+  }
+
+  buildForm() {
+    this.form = this.fb.group({
+      currentResin: [null, [Validators.required]],
+      expectedResin: [null, [Validators.required]]
+    });
   }
 
   estimateResin() {
@@ -136,10 +177,6 @@ export class CalcComponent implements OnInit {
   }
 
 
-
-
-
-
   formatIntervalF(minutes) {
     let interval = [Math.floor(minutes / 60).toString(), (minutes % 60).toString()];
     return interval[0].padStart(2, '0') + ':' + interval[1].padStart(2, '0')
@@ -156,18 +193,6 @@ export class CalcComponent implements OnInit {
     }
     return this.formatIntervalF(interval);
   }
-
-
-  // console.log(this.getIntervalF('23:00', '1:45'))
-  // console.log(this.getInterval('10:25', '11:30'))
-
-
-
-
-
-
-
-
 
 
 }

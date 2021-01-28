@@ -3,7 +3,7 @@
 }
 .child {
   position: absolute;
-  margin-top: 32vh;
+  margin-top: 21vh;
   display: flex;
   justify-content: center;
 }
@@ -11,7 +11,7 @@
 @media (max-width: 750px) {
   .child {
     position: absolute;
-    margin-top: 28vh;
+    margin-top: 20vh;
     display: flex;
     justify-content: center;
   }
