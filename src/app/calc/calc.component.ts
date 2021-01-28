@@ -177,7 +177,6 @@ export class CalcComponent implements OnInit {
 
   }
 
-
   formatIntervalF(minutes) {
     let interval = [Math.floor(minutes / 60).toString(), (minutes % 60).toString()];
     return interval[0].padStart(2, '0') + ':' + interval[1].padStart(2, '0')
@@ -194,6 +193,5 @@ export class CalcComponent implements OnInit {
     }
     return this.formatIntervalF(interval);
   }
-
 
 }
