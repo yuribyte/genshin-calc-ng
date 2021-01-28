@@ -58,6 +58,8 @@ export class CalcComponent implements OnInit {
   isInvalid = false;
   isSame = false;
 
+  calculatedValues;
+
   form: FormGroup;
 
   result = false
@@ -88,6 +90,10 @@ export class CalcComponent implements OnInit {
       this.calcResin()
     }
 
+    this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes')
+    this.currentLocalHours = localStorage.getItem('currentLocalHours')
+    this.currentLocalData = localStorage.getItem('currentLocalData')
+    this.estimateResin()
   }
 
   calcResin() {
@@ -97,6 +103,13 @@ export class CalcComponent implements OnInit {
 
     const estimatedCharge = dayjs(today).add(equivalentMinutes, 'm').toDate();
     const equivalentData = dayjs(estimatedCharge).locale('pt-br').format("dddd, HH:mm")
+
+    const now = dayjs()
+    const fromTime = now.format("HH:mm")
+    localStorage.setItem('fromTime', fromTime)
+    const currentResin = parseInt(this.form.value.currentResin)
+
+    localStorage.setItem('currentResin', currentResin.toString())
 
     this.calculatedResinMinutes = equivalentMinutes
     this.calculatedResinHours = equivalentHours
@@ -142,5 +155,44 @@ export class CalcComponent implements OnInit {
       expectedResin: [null, [Validators.required]]
     });
   }
+
+  estimateResin() {
+    const now = dayjs()
+    const nowF = now.format("HH:mm")
+    const fromTime = localStorage.getItem('fromTime')
+
+    const currentResin = parseInt(localStorage.getItem('currentResin'))
+
+    if (!isNaN(currentResin)) {
+      const calculatedTime = this.getIntervalF(fromTime, nowF)
+
+      const values = calculatedTime.split(':')
+
+      const estimatedResin = Math.trunc((parseInt(values[0]) * 60 + parseInt(values[1])) / 8) + currentResin
+
+      localStorage.setItem('estimatedResin', estimatedResin.toString())
+      this.calculatedValues = localStorage.getItem('estimatedResin')
+    }
+
+  }
+
+
+  formatIntervalF(minutes) {
+    let interval = [Math.floor(minutes / 60).toString(), (minutes % 60).toString()];
+    return interval[0].padStart(2, '0') + ':' + interval[1].padStart(2, '0')
+  }
+
+  getIntervalF(from, to) {
+    let [hoursA, minutesA] = from?.split(':');
+    let [hoursB, minutesB] = to?.split(':');
+    let timeA = dayjs().hour(hoursA).minute(minutesA);
+    let timeB = dayjs().hour(hoursB).minute(minutesB);
+    let interval = timeB.diff(timeA, 'minute');
+    if (interval < 0) {
+      return this.formatIntervalF(24 * 60 + timeB.diff(timeA, 'minute'));
+    }
+    return this.formatIntervalF(interval);
+  }
+
 
 }
