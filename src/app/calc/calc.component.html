@@ -13,12 +13,12 @@
   <strong>Data:</strong> {{currentLocalData}} <br>
 </div>
 
-<div class="text-danger-form" [@fadeInOut] class="alert alert-danger" *ngIf="form.hasError('isGreater')">
+<!-- <div class="text-danger-form" [@fadeInOut] class="alert alert-danger" *ngIf="isInvalid">
   Valores incorretos
 </div>
-<div class="text-success-form" [@fadeInOut] class="alert alert-success" *ngIf="form.hasError('isSame')">
+<div class="text-success-form" [@fadeInOut] class="alert alert-success" *ngIf="isSame">
   Resina carregada! ^ω^
-</div>
+</div> -->
 
 
 <form [formGroup]="form" novalidade>
@@ -30,5 +30,6 @@
     <label for="expectedResin">{{expectedResinText}}</label>
     <input [imask]="mask" inputmode="numeric" pattern="[0-9]*" autocomplete="off" formControlName="expectedResin" type="text" class="form-control" id="expectedResin" aria-describedby="expectedResin" placeholder="0">
   </div>
-  <button [disabled]="form.invalid || form.hasError('isGreater')" (click)="calcResin()" class="btn btn-primary btn-lg btn-block"><b>{{btnText}}</b></button>
+  <button [disabled]="form.invalid || isInvalid || isSame" (click)="checkValues()"
+   [class]="form.invalid || isInvalid || isSame ? 'btn btn-secondary btn-lg btn-block' : 'btn btn-primary btn-lg btn-block'"><b>{{btnText}}</b></button>
 </form>
