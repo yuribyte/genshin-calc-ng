@@ -74,6 +74,7 @@ export class CalcComponent implements OnInit {
   ngOnInit(): void {
     this.getLocals()
     this.buildForm()
+    this.estimateResin()
   }
 
   checkValues() {
@@ -122,7 +123,7 @@ export class CalcComponent implements OnInit {
       localStorage.setItem('currentLocalHours', this.calculatedResinHours)
       localStorage.setItem('currentLocalData', this.calculatedResinData)
     }
-    
+
     this.result = true
 
   }
@@ -171,7 +172,7 @@ export class CalcComponent implements OnInit {
       const estimatedResin = Math.trunc((parseInt(values[0]) * 60 + parseInt(values[1])) / 8) + currentResin
 
       localStorage.setItem('estimatedResin', estimatedResin.toString())
-      this.calculatedValues = localStorage.getItem('estimatedResin')
+      this.calculatedValues = parseInt(localStorage.getItem('estimatedResin')) >= 160 ? 160 : localStorage.getItem('estimatedResin')
     }
 
   }
