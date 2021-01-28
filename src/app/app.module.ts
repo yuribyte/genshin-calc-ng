@@ -5,8 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { IMaskModule } from 'angular-imask';
+import { PushNotificationsModule, PushNotificationsService } from 'ng-push';
 
 import { AppComponent } from './app.component';
+
+
 import { CalcComponent } from './calc/calc.component';
 
 @NgModule({
@@ -19,9 +22,10 @@ import { CalcComponent } from './calc/calc.component';
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
-    IMaskModule
+    IMaskModule,
+    // PushNotificationsModule
   ],
-  providers: [],
+  providers: [PushNotificationsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

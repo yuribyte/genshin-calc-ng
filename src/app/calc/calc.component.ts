@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 
 import * as dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
+import { PushNotificationsService } from 'ng-push';
 
 @Component({
   selector: 'genshin-calc',
@@ -63,8 +64,11 @@ export class CalcComponent implements OnInit {
 
 
   constructor(
-    private fb: FormBuilder
-  ) { }
+    private fb: FormBuilder,
+    private pushNotify: PushNotificationsService
+  ) {
+    this.pushNotify.requestPermission();
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -77,10 +81,11 @@ export class CalcComponent implements OnInit {
     this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes')
     this.currentLocalHours = localStorage.getItem('currentLocalHours')
     this.currentLocalData = localStorage.getItem('currentLocalData')
+
   }
 
   calcResin() {
-    const equivalentMinutes = ((parseInt(this.form.value.currentResin) - parseInt(this.form.value.expectedResin)) * 8) * -1
+    const equivalentMinutes = ((parseInt(this.form.value.currentResin) - parseInt(this.form.value.expectedResin)) * 1) * -1
     const equivalentHours = (equivalentMinutes / 60).toFixed(2)
     const today = new Date();
 
@@ -102,6 +107,20 @@ export class CalcComponent implements OnInit {
 
     this.result = true
 
+    if (dayjs().locale('pt-br').format("dddd, HH:mm") >= this.currentLocalData) {
+      this.notify()
+    }
+
   }
 
+  notify() {
+    const options = {
+      body: "Sua resina está totalmente carregada!",
+      icon: "assets/icons/paimon-2.png"
+    }
+    this.pushNotify.create('Genshin Impact', options).subscribe(
+      res => console.log(res),
+      err => console.log(err)
+    );
+  }
 }
