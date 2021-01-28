@@ -11,6 +11,10 @@
   <strong>Minutos:</strong> {{currentLocalMinutes}} <br>
   <strong>Horas:</strong> {{currentLocalHours}} <br>
   <strong>Data:</strong> {{currentLocalData}} <br>
+  <hr>
+  <div *ngIf="calculatedValues != undefined || calculatedValues != null">
+    <strong>Resina Atual: {{calculatedValues}} </strong><br>
+  </div>
 </div>
 
 <div class="text-danger-form" [@fadeInOut] class="alert alert-danger" *ngIf="form.hasError('isGreater')">
