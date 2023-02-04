@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 import * as dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
@@ -60,7 +60,7 @@ export class CalcComponent implements OnInit {
 
   calculatedValues;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   result = false
   same = false
@@ -69,7 +69,7 @@ export class CalcComponent implements OnInit {
     mask: Number
   }
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     this.getLocals()
