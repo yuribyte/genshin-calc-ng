@@ -7,7 +7,7 @@
 <div
   [@fadeInOut]
   class="text-success-form alert alert-success"
-  *ngIf="result == false && currentLocalData != undefined"
+  *ngIf="!result && currentLocalData"
 >
   <strong>Último resultado</strong>
 
@@ -24,7 +24,7 @@
 
 <form [formGroup]="form" novalidade>
   <div class="form-group">
-    <label for="currentResin">{{currentResinText}}</label>
+    <label for="currentResin">Resina atual</label>
 
     <input
       digitOnly
@@ -42,7 +42,7 @@
   </div>
 
   <div class="form-group mt-2">
-    <label for="expectedResin">{{expectedResinText}}</label>
+    <label for="expectedResin">Resina esperada</label>
 
     <input
       digitOnly
@@ -60,11 +60,11 @@
   </div>
 
   <button
-    (click)="handleCheckValues()"
-    [disabled]="hasValidForm"
     class="mt-3 w-100"
-    [class]="hasValidForm ? 'btn btn-secondary btn-lg btn-block' : 'btn btn-primary btn-lg btn-block'"
+    (click)="handleCalculateValues()"
+    [disabled]="hasInvalidForm"
+    [class]="hasInvalidForm ? 'btn btn-secondary btn-lg btn-block' : 'btn btn-primary btn-lg btn-block'"
   >
-    <b>{{btnText}}</b>
+    <b>Calcular</b>
   </button>
 </form>
