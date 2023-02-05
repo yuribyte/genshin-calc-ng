@@ -1,13 +1,10 @@
 label {
   color: #dddddd;
+  font-size: 1.2em;
 }
 
 input {
   height: 2em;
   font-size: 1.5em;
   width: 360px;
-}
-
-label {
-  font-size: 1.2em;
 }

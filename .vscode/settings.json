@@ -1,0 +1,24 @@
+{
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "prettier.trailingComma": "none",
+  "prettier.singleQuote": true,
+
+  "angular.log": "verbose",
+
+  "[typescript]": {
+    "editor.defaultFormatter": "svipas.prettier-plus",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true,
+      "source.fixAll.eslint": true
+    }
+  },
+
+  "[css]": {
+    "editor.defaultFormatter": "svipas.prettier-plus"
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "svipas.prettier-plus"
+  }
+}
