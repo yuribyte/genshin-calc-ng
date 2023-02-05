@@ -2,7 +2,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { isNil } from 'lodash';
-import { isEmpty } from 'lodash-es';
 
 import { DateTime } from 'luxon';
 import toastr from 'toastr';
@@ -32,15 +31,15 @@ export class CalcComponent implements OnInit {
   currentLocalData!: string;
   calculatedValues!: number;
 
-  isInvalid = false;
-  isSame = false;
   result = false;
 
-  form: FormGroup;
+  form!: FormGroup;
 
   maxResinValue: number = 160;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: FormBuilder) {
+    this._setupToastr();
+  }
 
   ngOnInit(): void {
     this._getLocals();
@@ -49,14 +48,13 @@ export class CalcComponent implements OnInit {
   }
 
   get hasValidCalculatedValues(): boolean {
-    const hasData =
-      !isNil(this.calculatedValues) && !isEmpty(this.calculatedValues);
+    const hasData = !isNil(this.calculatedValues);
 
-    return !!hasData;
+    return hasData;
   }
 
   get hasInvalidForm(): boolean {
-    return this.form.invalid || this.isInvalid || this.isSame;
+    return this.form.invalid;
   }
 
   handleCalculateValues() {
@@ -66,9 +64,9 @@ export class CalcComponent implements OnInit {
     const hasInvalidValues = current < 0 || current > expected || expected < 0;
 
     if (hasInvalidValues) {
-      this._setInvalid();
+      this._showInvalid();
     } else if (current === expected) {
-      this._setSame();
+      this._showIsSame();
     } else {
       this._setupCalculateResin();
     }
@@ -150,24 +148,16 @@ export class CalcComponent implements OnInit {
     this.result = true;
   }
 
-  private _setInvalid() {
-    toastr.error('Valores incorretos!', 'Erro');
-
-    this.isInvalid = true;
-
-    setTimeout(() => {
-      this.isInvalid = false;
-    }, 750);
+  private _setupToastr() {
+    toastr.options.preventDuplicates = true;
   }
 
-  private _setSame() {
+  private _showInvalid() {
+    toastr.error('Valores incorretos!', 'Erro');
+  }
+
+  private _showIsSame() {
     toastr.info('Resina carregada ou valores iguais', 'Atenção');
-
-    this.isSame = true;
-
-    setTimeout(() => {
-      this.isSame = false;
-    }, 750);
   }
 
   private _getLocals() {
