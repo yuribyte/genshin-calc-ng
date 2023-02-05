@@ -38,7 +38,7 @@ export class CalcComponent implements OnInit {
 
   form: FormGroup;
 
-  timeLocked: number = 160;
+  maxResinValue: number = 160;
 
   constructor(private _formBuilder: FormBuilder) {}
 
@@ -200,8 +200,8 @@ export class CalcComponent implements OnInit {
       localStorage.setItem('estimatedResin', estimatedResin.toString());
 
       this.calculatedValues =
-        Number(localStorage.getItem('estimatedResin')) >= this.timeLocked
-          ? this.timeLocked
+        Number(localStorage.getItem('estimatedResin')) >= this.maxResinValue
+          ? this.maxResinValue
           : Number(localStorage.getItem('estimatedResin'));
     }
   }
