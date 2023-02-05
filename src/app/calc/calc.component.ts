@@ -1,10 +1,17 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+import { isNil } from 'lodash';
+import { isEmpty } from 'lodash-es';
 
-import * as dayjs from 'dayjs'
-import 'dayjs/locale/pt-br'
-import toastr from 'toastr'
+import * as dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+import toastr from 'toastr';
 
 @Component({
   selector: 'genshin-calc',
@@ -12,15 +19,16 @@ import toastr from 'toastr'
   styleUrls: ['./calc.component.css'],
   animations: [
     trigger('fadeInOut', [
-      transition(':enter', [style({ opacity: 0 }), animate(500, style({ opacity: 1 }))]),
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate(500, style({ opacity: 1 }))
+      ]),
       transition(':leave', [animate(500, style({ opacity: 0 }))])
     ])
   ]
 })
 export class CalcComponent implements OnInit {
-
   static isGreater(group: AbstractControl): { [key: string]: boolean } {
-
     const current = group.get('currentResin');
     const expected = group.get('expectedResin');
 
@@ -32,18 +40,19 @@ export class CalcComponent implements OnInit {
       if (current.value == expected.value) {
         return { isSame: true };
       }
+
       if (current.value > expected.value) {
         return { isGreater: true };
       }
     }
 
     return undefined;
-
   }
 
-  currentResinText = 'Resina atual'
-  expectedResinText = 'Resina esperada'
-  btnText = 'Calcular'
+  currentResinText = 'Resina atual';
+  expectedResinText = 'Resina esperada';
+
+  btnText = 'Calcular';
 
   calculatedResinMinutes;
   calculatedResinHours;
@@ -60,126 +69,146 @@ export class CalcComponent implements OnInit {
 
   calculatedValues;
 
-  form: UntypedFormGroup;
+  form: FormGroup;
 
-  result = false
-  same = false
+  result = false;
+  same = false;
 
-  mask = {
-    mask: Number
-  }
-
-  constructor(private fb: UntypedFormBuilder) { }
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
-    this.getLocals()
-    this.buildForm()
-    this.estimateResin()
+    this.getLocals();
+    this._buildForm();
+    this.estimateResin();
   }
 
-  checkValues() {
-    const current = parseInt(this.form.value.currentResin)
-    const expected = parseInt(this.form.value.expectedResin)
+  get hasValidCalculatedValues(): boolean {
+    const hasData =
+      !isNil(this.calculatedValues) && !isEmpty(this.calculatedValues);
+
+    return !!hasData;
+  }
+
+  get hasValidForm(): boolean {
+    return this.form.invalid || this.isInvalid || this.isSame;
+  }
+
+  handleCheckValues() {
+    const current = parseInt(this.form.value.currentResin);
+    const expected = parseInt(this.form.value.expectedResin);
 
     if (current < 0 || expected < 0) {
-      this.setInvalid()
+      this.setInvalid();
     } else if (current > expected) {
-      this.setInvalid()
-    } else if (current == expected) {
-      this.setSame()
+      this.setInvalid();
+    } else if (current === expected) {
+      this.setSame();
     } else {
-      this.calcResin()
+      this.calcResin();
     }
 
-    this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes')
-    this.currentLocalHours = localStorage.getItem('currentLocalHours')
-    this.currentLocalData = localStorage.getItem('currentLocalData')
-    this.estimateResin()
+    this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes');
+    this.currentLocalHours = localStorage.getItem('currentLocalHours');
+    this.currentLocalData = localStorage.getItem('currentLocalData');
+
+    this.estimateResin();
   }
 
   calcResin() {
-    const equivalentMinutes = ((parseInt(this.form.value.currentResin) - parseInt(this.form.value.expectedResin)) * 8) * -1
-    const equivalentHours = (equivalentMinutes / 60).toFixed(2)
+    const equivalentMinutes =
+      (parseInt(this.form.value.currentResin) -
+        parseInt(this.form.value.expectedResin)) *
+      8 *
+      -1;
+    const equivalentHours = (equivalentMinutes / 60).toFixed(2);
     const today = new Date();
 
     const estimatedCharge = dayjs(today).add(equivalentMinutes, 'm').toDate();
-    const equivalentData = dayjs(estimatedCharge).locale('pt-br').format("dddd, HH:mm")
+    const equivalentData = dayjs(estimatedCharge)
+      .locale('pt-br')
+      .format('dddd, HH:mm');
 
-    const now = dayjs()
-    const fromTime = now.format("HH:mm")
-    localStorage.setItem('fromTime', fromTime)
-    const currentResin = parseInt(this.form.value.currentResin)
+    const now = dayjs();
+    const fromTime = now.format('HH:mm');
+    localStorage.setItem('fromTime', fromTime);
+    const currentResin = parseInt(this.form.value.currentResin);
 
-    localStorage.setItem('currentResin', currentResin.toString())
+    localStorage.setItem('currentResin', currentResin.toString());
 
-    this.calculatedResinMinutes = equivalentMinutes
-    this.calculatedResinHours = equivalentHours
-    this.calculatedResinData = equivalentData
+    this.calculatedResinMinutes = equivalentMinutes;
+    this.calculatedResinHours = equivalentHours;
+    this.calculatedResinData = equivalentData;
 
     if (this.calculatedResinMinutes > 0) {
-      localStorage.setItem('currentLocalMinutes', this.calculatedResinMinutes)
+      localStorage.setItem('currentLocalMinutes', this.calculatedResinMinutes);
     }
     if (this.calculatedResinHours > 0) {
-      localStorage.setItem('currentLocalHours', this.calculatedResinHours)
-      localStorage.setItem('currentLocalData', this.calculatedResinData)
+      localStorage.setItem('currentLocalHours', this.calculatedResinHours);
+      localStorage.setItem('currentLocalData', this.calculatedResinData);
     }
 
-    this.result = true
-
+    this.result = true;
   }
 
   setInvalid() {
-    toastr.error('Valores incorretos!', 'Erro!')
-    this.isInvalid = true
+    toastr.error('Valores incorretos!', 'Erro!');
+    this.isInvalid = true;
     setTimeout(() => {
-      this.isInvalid = false
+      this.isInvalid = false;
     }, 750);
   }
 
   setSame() {
-    toastr.info('Resina carregada!', 'Atenção')
-    this.isSame = true
+    toastr.info('Resina carregada!', 'Atenção');
+    this.isSame = true;
     setTimeout(() => {
-      this.isSame = false
+      this.isSame = false;
     }, 750);
   }
 
   getLocals() {
-    this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes')
-    this.currentLocalHours = localStorage.getItem('currentLocalHours')
-    this.currentLocalData = localStorage.getItem('currentLocalData')
+    this.currentLocalMinutes = localStorage.getItem('currentLocalMinutes');
+    this.currentLocalHours = localStorage.getItem('currentLocalHours');
+    this.currentLocalData = localStorage.getItem('currentLocalData');
   }
 
-  buildForm() {
-    this.form = this.fb.group({
+  private _buildForm() {
+    this.form = this._formBuilder.group({
       currentResin: [null, [Validators.required]],
       expectedResin: [null, [Validators.required]]
     });
   }
 
   estimateResin() {
-    const now = dayjs()
-    const nowF = now.format("HH:mm")
-    const fromTime = localStorage.getItem('fromTime')
+    const now = dayjs();
+    const nowF = now.format('HH:mm');
+    const fromTime = localStorage.getItem('fromTime');
 
-    const currentResin = parseInt(localStorage.getItem('currentResin'))
+    const currentResin = parseInt(localStorage.getItem('currentResin'));
 
     if (!isNaN(currentResin)) {
-      const calculatedTime = this.getIntervalF(fromTime, nowF)
+      const calculatedTime = this.getIntervalF(fromTime, nowF);
 
-      const values = calculatedTime.split(':')
+      const values = calculatedTime.split(':');
 
-      const estimatedResin = Math.trunc((parseInt(values[0]) * 60 + parseInt(values[1])) / 8) + currentResin
+      const estimatedResin =
+        Math.trunc((parseInt(values[0]) * 60 + parseInt(values[1])) / 8) +
+        currentResin;
 
-      localStorage.setItem('estimatedResin', estimatedResin.toString())
-      this.calculatedValues = parseInt(localStorage.getItem('estimatedResin')) >= 160 ? 160 : localStorage.getItem('estimatedResin')
+      localStorage.setItem('estimatedResin', estimatedResin.toString());
+      this.calculatedValues =
+        parseInt(localStorage.getItem('estimatedResin')) >= 160
+          ? 160
+          : localStorage.getItem('estimatedResin');
     }
-
   }
 
   formatIntervalF(minutes) {
-    let interval = [Math.floor(minutes / 60).toString(), (minutes % 60).toString()];
-    return interval[0].padStart(2, '0') + ':' + interval[1].padStart(2, '0')
+    let interval = [
+      Math.floor(minutes / 60).toString(),
+      (minutes % 60).toString()
+    ];
+    return interval[0].padStart(2, '0') + ':' + interval[1].padStart(2, '0');
   }
 
   getIntervalF(from, to) {
@@ -193,5 +222,4 @@ export class CalcComponent implements OnInit {
     }
     return this.formatIntervalF(interval);
   }
-
 }

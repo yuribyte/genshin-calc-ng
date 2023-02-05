@@ -1,39 +1,70 @@
 <div *ngIf="result" [@fadeInOut] class="alert alert-warning" role="alert">
-  <strong>Minutos:</strong> {{calculatedResinMinutes}} <br>
-  <strong>Horas:</strong> {{calculatedResinHours}} <br>
-  <strong>Data:</strong> {{calculatedResinData}} <br>
+  <strong>Minutos:</strong> {{calculatedResinMinutes}} <br />
+  <strong>Horas:</strong> {{calculatedResinHours}} <br />
+  <strong>Data:</strong> {{calculatedResinData}} <br />
 </div>
 
-
-<div class="text-success-form" [@fadeInOut] class="alert alert-success" *ngIf="result == false && currentLocalData != undefined">
+<div
+  [@fadeInOut]
+  class="text-success-form alert alert-success"
+  *ngIf="result == false && currentLocalData != undefined"
+>
   <strong>Último resultado</strong>
-  <hr>
-  <strong>Minutos:</strong> {{currentLocalMinutes}} <br>
-  <strong>Horas:</strong> {{currentLocalHours}} <br>
-  <strong>Data:</strong> {{currentLocalData}} <br>
-  <hr>
-  <div *ngIf="calculatedValues != undefined || calculatedValues != null">
-    <strong>Resina Atual: {{calculatedValues}} </strong><br>
+
+  <hr />
+  <strong>Minutos:</strong> {{currentLocalMinutes}} <br />
+  <strong>Horas:</strong> {{currentLocalHours}} <br />
+  <strong>Data:</strong> {{currentLocalData}} <br />
+  <hr />
+
+  <div *ngIf="hasValidCalculatedValues">
+    <strong>Resina Atual: {{calculatedValues}} </strong><br />
   </div>
 </div>
-
-<!-- <div class="text-danger-form" [@fadeInOut] class="alert alert-danger" *ngIf="isInvalid">
-  Valores incorretos
-</div>
-<div class="text-success-form" [@fadeInOut] class="alert alert-success" *ngIf="isSame">
-  Resina carregada! ^ω^
-</div> -->
-
 
 <form [formGroup]="form" novalidade>
   <div class="form-group">
     <label for="currentResin">{{currentResinText}}</label>
-    <input [imask]="mask" inputmode="numeric" pattern="[0-9]*" autocomplete="off" formControlName="currentResin" type="text" class="form-control" id="currentResin" aria-describedby="currentResin" placeholder="0">
+
+    <input
+      digitOnly
+      type="text"
+      placeholder="0"
+      class="form-control"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      autocomplete="off"
+      formControlName="currentResin"
+      min="0"
+      max="160"
+      maxlength="3"
+    />
   </div>
-  <div class="form-group">
+
+  <div class="form-group mt-2">
     <label for="expectedResin">{{expectedResinText}}</label>
-    <input [imask]="mask" inputmode="numeric" pattern="[0-9]*" autocomplete="off" formControlName="expectedResin" type="text" class="form-control" id="expectedResin" aria-describedby="expectedResin" placeholder="0">
+
+    <input
+      digitOnly
+      type="text"
+      placeholder="160"
+      class="form-control"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      autocomplete="off"
+      formControlName="expectedResin"
+      min="0"
+      max="160"
+      maxlength="3"
+    />
   </div>
-  <button [disabled]="form.invalid || isInvalid || isSame" (click)="checkValues()"
-   [class]="form.invalid || isInvalid || isSame ? 'btn btn-secondary btn-lg btn-block' : 'btn btn-primary btn-lg btn-block'"><b>{{btnText}}</b></button>
+
+  <button
+    (click)="handleCheckValues()"
+    [disabled]="hasValidForm"
+    class="mt-3 w-100"
+    [class]="hasValidForm ? 'btn btn-secondary btn-lg btn-block' : 'btn btn-primary btn-lg btn-block'"
+  >
+    <b>{{btnText}}</b>
+  </button>
 </form>
